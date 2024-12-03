@@ -1,0 +1,46 @@
+.cast {
+  padding: 20px;
+}
+
+.heading {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.actor {
+  display: flex;
+  align-items: center;
+}
+
+.actorImage {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin-right: 15px;
+}
+
+.actorDetails {
+  display: flex;
+  flex-direction: column;
+}
+
+.actorName {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.actorCharacter {
+  font-size: 14px;
+  color: #666;
+}

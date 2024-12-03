@@ -1,0 +1,165 @@
+.container {
+  display: flex;
+  justify-content: center;
+  box-sizing: border-box;
+  flex-direction: column;
+  max-width: 360px;
+  margin: 0 auto;
+  padding: 20px;
+  font-size: 16px;
+  color: #fff;
+}
+
+.goBack {
+  display: inline-block;
+  margin-bottom: 20px;
+  padding: 8px 16px;
+  background-color: #007bff;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.goBack:hover {
+  background-color: #0056b3;
+}
+
+.movieDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+}
+
+.posterWrapper {
+  flex-shrink: 0;
+}
+
+.poster {
+  width: 100%;
+  max-width: 300px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.details {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  flex-grow: 1;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0 0 16px;
+}
+
+.overview {
+  font-size: 16px;
+  color: #b7b5b5;
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+.info {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: auto;
+}
+
+.buttons button {
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+  background-color: #007bff;
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+.buttons button:hover {
+  background-color: #0056b3;
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 768px;
+  }
+
+  .goBack {
+    max-width: 156px;
+  }
+
+  .movieDetails {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .details {
+    text-align: left;
+    padding-left: 20px;
+    height: auto;
+  }
+
+  .title {
+    font-size: 28px;
+  }
+
+  .overview {
+    font-size: 18px;
+  }
+
+  .info {
+    font-size: 16px;
+  }
+  .buttons {
+    margin-top: auto;
+  }
+  .poster {
+    max-width: 400px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .container {
+    max-width: 1280px;
+    padding: 60px;
+  }
+
+  .movieDetails {
+    gap: 32px;
+  }
+
+  .poster {
+    max-width: 500px;
+  }
+
+  .title {
+    font-size: 32px;
+  }
+
+  .overview {
+    font-size: 20px;
+    line-height: 1.8;
+  }
+
+  .info {
+    font-size: 18px;
+  }
+}

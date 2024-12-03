@@ -1,0 +1,29 @@
+.reviews {
+  margin: 20px 0;
+}
+
+.heading {
+  font-size: 1.5em;
+  margin-bottom: 10px;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+}
+
+.item {
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+}
+
+.content {
+  font-style: italic;
+}
+
+.author {
+  text-align: right;
+  font-size: 0.9em;
+  color: #666;
+}

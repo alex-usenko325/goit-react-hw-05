@@ -1,0 +1,39 @@
+.nav {
+  display: flex;
+  gap: 20px;
+  padding: 10px 20px;
+  background-color: #333;
+}
+
+.link {
+  color: #fff;
+  text-decoration: none;
+  background-color: #007bff;
+  padding: 8px 15px;
+  border-radius: 5px;
+  border: 2px solid transparent;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.active {
+  font-weight: bold;
+  text-decoration: underline;
+  background-color: #0056b3;
+  border: 2px solid #004085;
+}
+
+.link:hover {
+  background-color: #0056b3;
+  transform: scale(1.1);
+}
+
+.link.active:hover {
+  background-color: #003366;
+  transform: none;
+}
+
+@media (max-width: 1023px) {
+  .nav {
+    justify-content: center;
+  }
+}
