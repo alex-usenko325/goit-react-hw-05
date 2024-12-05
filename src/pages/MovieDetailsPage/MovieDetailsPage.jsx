@@ -71,7 +71,6 @@ const MovieDetailsPage = () => {
               </p>
             </li>
           </ul>
-
           <div className={s.buttons}>
             <button onClick={() => setShowCast((prev) => !prev)}>
               {showCast ? "Hide Cast" : "Show Cast"}
