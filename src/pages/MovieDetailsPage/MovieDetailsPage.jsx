@@ -36,6 +36,16 @@ const MovieDetailsPage = () => {
       ? movie.production_countries[0].name
       : "N/A";
 
+  const toggleSection = (section) => {
+    if (section === "cast") {
+      setShowCast((prev) => !prev);
+      setShowReviews(false);
+    } else if (section === "reviews") {
+      setShowReviews((prev) => !prev);
+      setShowCast(false);
+    }
+  };
+
   return (
     <div className={s.container}>
       <Link to={goBackLink} className={s.goBack}>
@@ -72,10 +82,16 @@ const MovieDetailsPage = () => {
             </li>
           </ul>
           <div className={s.buttons}>
-            <button onClick={() => setShowCast((prev) => !prev)}>
+            <button
+              onClick={() => toggleSection("cast")}
+              className={showCast ? s.activeButton : ""}
+            >
               {showCast ? "Hide Cast" : "Show Cast"}
             </button>
-            <button onClick={() => setShowReviews((prev) => !prev)}>
+            <button
+              onClick={() => toggleSection("reviews")}
+              className={showReviews ? s.activeButton : ""}
+            >
               {showReviews ? "Hide Reviews" : "Show Reviews"}
             </button>
           </div>
