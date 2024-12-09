@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { fetchMovieCast } from "../../api/tmdbApi";
 import s from "./MovieCast.module.css";
 
-const MovieCast = ({ movieId }) => {
+const MovieCast = () => {
+  const { movieId } = useParams();
   const [cast, setCast] = useState([]);
 
   useEffect(() => {
@@ -10,7 +12,9 @@ const MovieCast = ({ movieId }) => {
       const castList = await fetchMovieCast(movieId);
       setCast(castList);
     };
-    getCast();
+    if (movieId) {
+      getCast();
+    }
   }, [movieId]);
 
   return (

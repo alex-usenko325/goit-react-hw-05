@@ -1,13 +1,26 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { searchMovies } from "../../api/tmdbApi";
+
 import MovieList from "../../components/MovieList/MovieList";
+
 import { toast } from "react-hot-toast";
 import { GoSearch } from "react-icons/go";
+import { Circles } from "react-loader-spinner";
 import s from "./MoviesPage.module.css";
 
 const MoviesPage = () => {
   const [query, setQuery] = useState("");
   const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    const queryParam = searchParams.get("query");
+    if (queryParam) {
+      setQuery(queryParam);
+    }
+  }, [searchParams]);
 
   const handleSearch = async (e) => {
     if (e) e.preventDefault();
@@ -16,11 +29,18 @@ const MoviesPage = () => {
       return;
     }
 
-    const searchedMovies = await searchMovies(query);
-    if (searchedMovies.length === 0) {
-      toast.error("No movies found for your search.");
-    } else {
-      setMovies(searchedMovies);
+    setLoading(true);
+    try {
+      const searchedMovies = await searchMovies(query);
+      if (searchedMovies.length === 0) {
+        toast.error("No movies found for your search.");
+      } else {
+        setMovies(searchedMovies);
+      }
+    } catch {
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -50,7 +70,20 @@ const MoviesPage = () => {
           <GoSearch className={s.icon} size={24} onClick={handleIconClick} />
         </div>
       </form>
-      <MovieList movies={movies} />
+      {loading ? (
+        <div className="loader">
+          <Circles
+            height="80"
+            width="80"
+            color="#4fa94d"
+            ariaLabel="circles-loading"
+            visible={true}
+          />
+          <p>Loading...</p>
+        </div>
+      ) : (
+        <MovieList movies={movies} />
+      )}
     </div>
   );
 };

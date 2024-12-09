@@ -1,6 +1,9 @@
-import { useEffect, useState, Suspense, lazy } from "react";
+import { useEffect, useState, Suspense, lazy, useRef } from "react";
 import { useParams, Link, useLocation } from "react-router-dom";
 import { fetchMovieDetails } from "../../api/tmdbApi";
+
+import { Circles } from "react-loader-spinner";
+
 import s from "./MovieDetailsPage.module.css";
 
 const MovieCast = lazy(() => import("../../components/MovieCast/MovieCast"));
@@ -11,8 +14,8 @@ const MovieReviews = lazy(() =>
 const MovieDetailsPage = () => {
   const { movieId } = useParams();
   const [movie, setMovie] = useState(null);
-  const [showCast, setShowCast] = useState(false);
-  const [showReviews, setShowReviews] = useState(false);
+  const castRef = useRef(false);
+  const reviewsRef = useRef(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -23,7 +26,19 @@ const MovieDetailsPage = () => {
     getMovieDetails();
   }, [movieId]);
 
-  if (!movie) return <p>Loading...</p>;
+  if (!movie)
+    return (
+      <div className="loader">
+        <Circles
+          height="80"
+          width="80"
+          color="#4fa94d"
+          ariaLabel="circles-loading"
+          visible={true}
+        />
+        <p>Loading...</p>
+      </div>
+    );
 
   const goBackLink = location.state?.from || "/movies";
 
@@ -38,11 +53,11 @@ const MovieDetailsPage = () => {
 
   const toggleSection = (section) => {
     if (section === "cast") {
-      setShowCast((prev) => !prev);
-      setShowReviews(false);
+      castRef.current = !castRef.current;
+      reviewsRef.current = false;
     } else if (section === "reviews") {
-      setShowReviews((prev) => !prev);
-      setShowCast(false);
+      reviewsRef.current = !reviewsRef.current;
+      castRef.current = false;
     }
   };
 
@@ -83,27 +98,59 @@ const MovieDetailsPage = () => {
           </ul>
           <div className={s.buttons}>
             <button
-              onClick={() => toggleSection("cast")}
-              className={showCast ? s.activeButton : ""}
+              onClick={() => {
+                toggleSection("cast");
+                setMovie((prev) => ({ ...prev }));
+              }}
+              className={castRef.current ? s.activeButton : ""}
             >
-              {showCast ? "Hide Cast" : "Show Cast"}
+              {castRef.current ? "Hide Cast" : "Show Cast"}
             </button>
             <button
-              onClick={() => toggleSection("reviews")}
-              className={showReviews ? s.activeButton : ""}
+              onClick={() => {
+                toggleSection("reviews");
+                setMovie((prev) => ({ ...prev }));
+              }}
+              className={reviewsRef.current ? s.activeButton : ""}
             >
-              {showReviews ? "Hide Reviews" : "Show Reviews"}
+              {reviewsRef.current ? "Hide Reviews" : "Show Reviews"}
             </button>
           </div>
         </div>
       </div>
-      {showCast && (
-        <Suspense fallback={<p>Loading cast...</p>}>
+      {castRef.current && (
+        <Suspense
+          fallback={
+            <div className="loader">
+              <Circles
+                height="80"
+                width="80"
+                color="#4fa94d"
+                ariaLabel="circles-loading"
+                visible={true}
+              />
+              <p>Loading cast...</p>
+            </div>
+          }
+        >
           <MovieCast movieId={movieId} />
         </Suspense>
       )}
-      {showReviews && (
-        <Suspense fallback={<p>Loading reviews...</p>}>
+      {reviewsRef.current && (
+        <Suspense
+          fallback={
+            <div className="loader">
+              <Circles
+                height="80"
+                width="80"
+                color="#4fa94d"
+                ariaLabel="circles-loading"
+                visible={true}
+              />
+              <p>Loading reviews...</p>
+            </div>
+          }
+        >
           <MovieReviews movieId={movieId} />
         </Suspense>
       )}
