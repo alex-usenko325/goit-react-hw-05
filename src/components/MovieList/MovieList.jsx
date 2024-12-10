@@ -11,7 +11,7 @@ const MovieList = ({ movies }) => {
           <li key={movie.id} className={s.item}>
             <Link
               to={`/movies/${movie.id}`}
-              state={{ from: location.pathname }}
+              state={{ from: location }}
               className={s.link}
             >
               <img
