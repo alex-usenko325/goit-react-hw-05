@@ -1,30 +1,40 @@
-import { useEffect, useState, Suspense, lazy, useRef } from "react";
-import { useParams, Link, useLocation } from "react-router-dom";
+import { useEffect, useState, useRef } from "react";
+import {
+  useParams,
+  Link,
+  NavLink,
+  Outlet,
+  useLocation,
+} from "react-router-dom";
 import { fetchMovieDetails } from "../../api/tmdbApi";
-
 import { Circles } from "react-loader-spinner";
-
 import s from "./MovieDetailsPage.module.css";
-
-const MovieCast = lazy(() => import("../../components/MovieCast/MovieCast"));
-const MovieReviews = lazy(() =>
-  import("../../components/MovieReviews/MovieReviews")
-);
 
 const MovieDetailsPage = () => {
   const { movieId } = useParams();
   const [movie, setMovie] = useState(null);
-  const castRef = useRef(false);
-  const reviewsRef = useRef(false);
+  const [error, setError] = useState(null);
   const location = useLocation();
+
+  const goBackLink = useRef(location.state?.from || "/movies");
 
   useEffect(() => {
     const getMovieDetails = async () => {
-      const details = await fetchMovieDetails(movieId);
-      setMovie(details);
+      try {
+        const details = await fetchMovieDetails(movieId);
+        setMovie(details);
+      } catch (error) {
+        console.error("Failed to fetch movie details:", error);
+        setError("Something went wrong while fetching the movie details.");
+      }
     };
+
     getMovieDetails();
   }, [movieId]);
+
+  if (error) {
+    return <p>{error}</p>;
+  }
 
   if (!movie)
     return (
@@ -40,30 +50,15 @@ const MovieDetailsPage = () => {
       </div>
     );
 
-  const goBackLink = location.state?.from || "/movies";
-
   const rating = movie.vote_average ? movie.vote_average.toFixed(1) : "N/A";
   const releaseYear = movie.release_date
     ? new Date(movie.release_date).getFullYear()
     : "N/A";
-  const country =
-    movie.production_countries && movie.production_countries.length > 0
-      ? movie.production_countries[0].name
-      : "N/A";
-
-  const toggleSection = (section) => {
-    if (section === "cast") {
-      castRef.current = !castRef.current;
-      reviewsRef.current = false;
-    } else if (section === "reviews") {
-      reviewsRef.current = !reviewsRef.current;
-      castRef.current = false;
-    }
-  };
+  const country = movie.production_countries?.[0]?.name || "N/A";
 
   return (
     <div className={s.container}>
-      <Link to={goBackLink} className={s.goBack}>
+      <Link to={goBackLink.current} className={s.goBack}>
         Go back
       </Link>
       <div className={s.movieDetails}>
@@ -96,64 +91,29 @@ const MovieDetailsPage = () => {
               </p>
             </li>
           </ul>
+
           <div className={s.buttons}>
-            <button
-              onClick={() => {
-                toggleSection("cast");
-                setMovie((prev) => ({ ...prev }));
-              }}
-              className={castRef.current ? s.activeButton : ""}
+            <NavLink
+              to="cast"
+              className={({ isActive }) =>
+                isActive ? s.activeButton : s.button
+              }
             >
-              {castRef.current ? "Hide Cast" : "Show Cast"}
-            </button>
-            <button
-              onClick={() => {
-                toggleSection("reviews");
-                setMovie((prev) => ({ ...prev }));
-              }}
-              className={reviewsRef.current ? s.activeButton : ""}
+              Cast
+            </NavLink>
+            <NavLink
+              to="reviews"
+              className={({ isActive }) =>
+                isActive ? s.activeButton : s.button
+              }
             >
-              {reviewsRef.current ? "Hide Reviews" : "Show Reviews"}
-            </button>
+              Reviews
+            </NavLink>
           </div>
         </div>
       </div>
-      {castRef.current && (
-        <Suspense
-          fallback={
-            <div className="loader">
-              <Circles
-                height="80"
-                width="80"
-                color="#4fa94d"
-                ariaLabel="circles-loading"
-                visible={true}
-              />
-              <p>Loading cast...</p>
-            </div>
-          }
-        >
-          <MovieCast movieId={movieId} />
-        </Suspense>
-      )}
-      {reviewsRef.current && (
-        <Suspense
-          fallback={
-            <div className="loader">
-              <Circles
-                height="80"
-                width="80"
-                color="#4fa94d"
-                ariaLabel="circles-loading"
-                visible={true}
-              />
-              <p>Loading reviews...</p>
-            </div>
-          }
-        >
-          <MovieReviews movieId={movieId} />
-        </Suspense>
-      )}
+
+      <Outlet />
     </div>
   );
 };

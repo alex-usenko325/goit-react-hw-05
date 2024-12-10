@@ -1,76 +1,77 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { searchMovies } from "../../api/tmdbApi";
-
 import MovieList from "../../components/MovieList/MovieList";
-
-import { toast } from "react-hot-toast";
-import { GoSearch } from "react-icons/go";
+import { searchMovies } from "../../api/tmdbApi";
 import { Circles } from "react-loader-spinner";
+import { FaSearch } from "react-icons/fa";
+import { toast } from "react-hot-toast";
+import { FaExclamationTriangle, FaInfoCircle } from "react-icons/fa";
 import s from "./MoviesPage.module.css";
 
 const MoviesPage = () => {
-  const [query, setQuery] = useState("");
   const [movies, setMovies] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [searchParams] = useSearchParams();
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const query = searchParams.get("query") || "";
 
   useEffect(() => {
-    const queryParam = searchParams.get("query");
-    if (queryParam) {
-      setQuery(queryParam);
-    }
-  }, [searchParams]);
-
-  const handleSearch = async (e) => {
-    if (e) e.preventDefault();
-    if (!query) {
-      toast.error("Please enter a movie name to search!");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const searchedMovies = await searchMovies(query);
-      if (searchedMovies.length === 0) {
-        toast.error("No movies found for your search.");
-      } else {
-        setMovies(searchedMovies);
+    const fetchMoviesByQuery = async () => {
+      if (!query) return;
+      setIsLoading(true);
+      try {
+        const fetchedMovies = await searchMovies(query);
+        if (fetchedMovies.length === 0) {
+          toast("No movies found for your query. Try something else!", {
+            icon: <FaExclamationTriangle size={24} color="#f39c12" />,
+          });
+        }
+        setMovies(fetchedMovies);
+      } catch (error) {
+        toast.error(`Error fetching movies: ${error.message}`, {
+          icon: <FaExclamationTriangle size={24} color="#e74c3c" />,
+        });
+      } finally {
+        setIsLoading(false);
       }
-    } catch {
-      toast.error("Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
+    };
+
+    fetchMoviesByQuery();
+  }, [query]);
+
+  const handleSearch = () => {
+    const searchQuery = searchParams.get("query").trim();
+    if (searchQuery) {
+      setSearchParams({ query: searchQuery });
+    } else {
+      toast("Please enter a search term!", {
+        icon: <FaInfoCircle size={24} color="#3498db" />,
+      });
     }
   };
 
-  const handleIconClick = () => {
-    if (!query) {
-      toast.error("Please enter a movie name to search!");
-      return;
-    }
-
-    handleSearch();
+  const handleInputChange = (e) => {
+    setSearchParams({ query: e.target.value });
   };
 
   return (
     <div className={s.container}>
-      <h1>Search Movies</h1>
-      <form onSubmit={handleSearch}>
+      <div className={s.form}>
         <div className={s.inputWrapper}>
+          <span className={s.icon} onClick={handleSearch}>
+            <FaSearch />
+          </span>
+
           <input
             type="text"
+            name="query"
             value={query}
-            autoFocus
-            autoComplete="off"
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search images and photos"
+            onChange={handleInputChange}
+            placeholder="Search movies..."
             className={s.input}
           />
-          <GoSearch className={s.icon} size={24} onClick={handleIconClick} />
         </div>
-      </form>
-      {loading ? (
+      </div>
+      {isLoading && (
         <div className="loader">
           <Circles
             height="80"
@@ -81,9 +82,8 @@ const MoviesPage = () => {
           />
           <p>Loading...</p>
         </div>
-      ) : (
-        <MovieList movies={movies} />
       )}
+      {!isLoading && <MovieList movies={movies} />}
     </div>
   );
 };
